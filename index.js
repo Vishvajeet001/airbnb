@@ -2,6 +2,7 @@ import express from "express";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import path from "path";
+import dotenv from "dotenv";
 
 import rootDir from "./utils/path.js";
 import connectDB from "./utils/db.js";
@@ -13,6 +14,7 @@ import requireRole from "./middlewares/requireRole.js";
 
 const app = express();
 
+dotenv.config();
 connectDB();
 
 app.set("view engine", "ejs");
@@ -57,6 +59,9 @@ app.use((req, res, next) => {
   });
 });
 
-app.listen(5500, () => {
-  console.log("Server is running on http://localhost:5500");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
+
