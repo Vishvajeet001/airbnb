@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>airbnb</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <header>
+        <%- include('../partials/nav.ejs') %>
+    </header>
+    <main>
+
+        <div class="card-container">
+
+            <% homes.forEach(home=> { %>
+                <div class="card">
+                    <img id="image" src="<%= home.photo %>" alt="<%= home.name %>">
+                    <div id="details">
+                        <div id="d1">
+                            <h1 class="name">Name:
+                            </h1>
+                            <h2 class="price">Price:
+                            </h2>
+                            <p class="location">Location:
+                            </p>
+                            <p class="rating">Rating:
+                            </p>
+                        </div>
+                        <div id="d2">
+                            <h1 class="name">
+                                <%= home.name %>
+                            </h1>
+                            <h2 class="price">
+                                <%= home.price %>
+                            </h2>
+                            <p class="location">
+                                <%= home.location %>
+                            </p>
+                            <p class="rating">🌟 <%= home.rating %>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="btn-div">
+                        <a href="/client/homeDetails/<%= home.id %>" id="view-btn-home" class="btn">View Details</a>
+                        <a href="/client/booking" id="book-btn-home" class="btn">Book</a>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+
+    </main>
+</body>
+
+</html>

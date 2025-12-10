@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <%- include('../partials/nav.ejs') %>
+    <main>
+      <div class="auth-container">
+        <div class="auth-card">
+          <h2 class="auth-title">Sign in to your account</h2>
+          <% function fieldError(field) { if (typeof errors !== 'undefined' &&
+          errors && Array.isArray(errors)) { const e = errors.find(err =>
+          err.param === field); return e ? e.msg : null; } return null; } %> <%
+          if (typeof errors !== 'undefined' && errors.length > 0) { %>
+          <div class="alert alert-danger" role="alert">
+            <div class="alert-head">Sign in failed</div>
+            <button type="button" class="alert-dismiss" aria-label="Dismiss">
+              ×
+            </button>
+            <ul class="alert-list">
+              <% errors.forEach(function(error) { %>
+              <li><%= error.msg %></li>
+              <% }); %>
+            </ul>
+          </div>
+          <% } %>
+          <form action="/auth/login" method="POST" id="loginForm">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                value="<%= oldInput ? oldInput.email : '' %>"
+                required
+                placeholder="you@example.com"
+                class="<%= fieldError('email') ? 'input-error' : '' %>"
+              />
+              <% if (fieldError('email')) { %>
+              <div class="field-error"><%= fieldError('email') %></div>
+              <% } %>
+            </div>
+
+            <div class="form-group">
+              <label for="pwd">Password</label>
+              <input
+                type="password"
+                name="pwd"
+                id="pwd"
+                required
+                placeholder="Your password"
+                class="<%= fieldError('pwd') ? 'input-error' : '' %>"
+              />
+              <% if (fieldError('pwd')) { %>
+              <div class="field-error"><%= fieldError('pwd') %></div>
+              <% } %>
+            </div>
+
+            <div class="form-group">
+              <button id="loginBtn" class="btn" type="submit">Sign in</button>
+            </div>
+
+            <p class="muted">
+              Don't have an account? <a href="/auth/signup">Create one</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const form = document.getElementById("loginForm");
+      const btn = document.getElementById("loginBtn");
+      const email = document.getElementById("email");
+      const pwd = document.getElementById("pwd");
+
+      function validate() {
+        btn.disabled = !(email.value && pwd.value);
+        btn.style.opacity = btn.disabled ? 0.6 : 1;
+      }
+      email.addEventListener("input", validate);
+      pwd.addEventListener("input", validate);
+      validate();
+      // dismissible alerts
+      document.querySelectorAll(".alert-dismiss").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const a = btn.closest(".alert");
+          if (!a) return;
+          a.classList.add("fade-out");
+          setTimeout(() => a.remove(), 260);
+        });
+      });
+    </script>
+  </body>
+</html>

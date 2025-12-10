@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <%- include('../partials/nav.ejs') %>
+    <main>
+      <div class="auth-container">
+        <div class="auth-card">
+          <h2 class="auth-title">Create your account</h2>
+          <% function fieldError(field) { if (typeof errors !== 'undefined' &&
+          errors && Array.isArray(errors)) { const e = errors.find(err =>
+          err.param === field); return e ? e.msg : null; } return null; } %> <%
+          if (typeof errors !== 'undefined' && errors.length > 0) { %>
+          <div class="alert alert-danger" role="alert">
+            <div class="alert-head">
+              There were problems with your submission
+            </div>
+            <button type="button" class="alert-dismiss" aria-label="Dismiss">
+              ×
+            </button>
+            <div class="flex">
+                <ul class="alert-list">
+                    <% errors.forEach(function(error) { %>
+                    <li>
+                      <%= error.param ? (error.param + ': ') : '' %><%= error.msg %>
+                    </li>
+                    <% }); %>
+                  </ul>
+            </div>
+          </div>
+          <% } %>
+          <form action="/auth/signup" method="POST" id="signupForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="fname">First name</label>
+                <input
+                  type="text"
+                  name="fname"
+                  id="fname"
+                  required
+                  placeholder="John"
+                  value="<%= oldInput ? oldInput.fname : '' %>"
+                  class="<%= fieldError('fname') ? 'input-error' : '' %>"
+                />
+                <% if (fieldError('fname')) { %>
+                <div class="field-error"><%= fieldError('fname') %></div>
+                <% } %>
+              </div>
+              <div class="form-group">
+                <label for="lname">Last name</label>
+                <input
+                  type="text"
+                  name="lname"
+                  id="lname"
+                  required
+                  placeholder="Doe"
+                  value="<%= oldInput ? oldInput.lname : '' %>"
+                  class="<%= fieldError('lname') ? 'input-error' : '' %>"
+                />
+                <% if (fieldError('lname')) { %>
+                <div class="field-error"><%= fieldError('lname') %></div>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                required
+                placeholder="you@example.com"
+                value="<%= oldInput ? oldInput.email : '' %>"
+                class="<%= fieldError('email') ? 'input-error' : '' %>"
+              />
+              <% if (fieldError('email')) { %>
+              <div class="field-error"><%= fieldError('email') %></div>
+              <% } %>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="pwd">Password</label>
+                <input
+                  type="password"
+                  name="pwd"
+                  id="pwd"
+                  required
+                  placeholder="Choose a password"
+                  minlength="8"
+                  class="<%= fieldError('pwd') ? 'input-error' : '' %>"
+                />
+                <% if (fieldError('pwd')) { %>
+                <div class="field-error"><%= fieldError('pwd') %></div>
+                <% } %>
+              </div>
+              <div class="form-group">
+                <label for="conpwd">Confirm password</label>
+                <input
+                  type="password"
+                  name="conpwd"
+                  id="conpwd"
+                  required
+                  placeholder="Repeat password"
+                  minlength="8"
+                  class="<%= fieldError('conpwd') ? 'input-error' : '' %>"
+                />
+                <% if (fieldError('conpwd')) { %>
+                <div class="field-error"><%= fieldError('conpwd') %></div>
+                <% } %>
+              </div>
+            </div>
+
+            <fieldset class="form-group radio-group">
+              <legend>Account type</legend>
+              <div class="radio-group">
+                <label class="radio-inline">
+                  <input type="radio" name="usertype" value="guest" <%= oldInput
+                  && oldInput.usertype === 'guest' ? 'checked' : '' %> /> Guest
+                </label>
+                <label class="radio-inline">
+                  <input type="radio" name="usertype" value="host" <%= oldInput
+                  && oldInput.usertype === 'host' ? 'checked' : '' %> /> Host
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="form-group terms">
+              <label>
+                <input type="checkbox" name="terms" id="tc" required /> I agree
+                to the
+                <a href="#">Terms &amp; Conditions</a>
+              </label>
+              <% if (fieldError('terms')) { %>
+              <div class="field-error"><%= fieldError('terms') %></div>
+              <% } %>
+            </div>
+
+            <div class="form-group">
+              <button id="signupBtn" class="btn" type="submit">Sign up</button>
+            </div>
+
+            <p class="muted">
+              Already have an account? <a href="/auth/login">Log in</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // client-side niceties: disable submit until passwords match and T&C checked
+      const form = document.getElementById("signupForm");
+      const pwd = document.getElementById("pwd");
+      const conpwd = document.getElementById("conpwd");
+      const tc = document.getElementById("tc");
+      const btn = document.getElementById("signupBtn");
+
+      function validate() {
+        const match = pwd.value && conpwd.value && pwd.value === conpwd.value;
+        btn.disabled = !(match && tc.checked);
+        btn.style.opacity = btn.disabled ? 0.6 : 1;
+      }
+
+      pwd.addEventListener("input", validate);
+      conpwd.addEventListener("input", validate);
+      tc.addEventListener("change", validate);
+
+      // initial state
+      validate();
+      // dismissible alerts
+      document.querySelectorAll(".alert-dismiss").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const a = btn.closest(".alert");
+          if (!a) return;
+          a.classList.add("fade-out");
+          setTimeout(() => a.remove(), 260);
+        });
+      });
+    </script>
+  </body>
+</html>

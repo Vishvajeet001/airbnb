@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Home</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <header>
+        <%- include('../partials/nav.ejs') %>
+    </header>
+    <main>
+        <form action="/host/editHome/<%= home.id %>" method="POST">
+            <input type="text" name="name" value="<%= home.name %>" placeholder="Enter home name..."><br>
+            <input type="number" name="price" value="<%= home.price %>" placeholder="Enter price per day..."><br>
+            <input type="text" name="location" value="<%= home.location %>" placeholder="Enter full location..."><br>
+            <input type="number" name="rating" value="<%= home.rating %>" placeholder="Enter rating..."><br>
+            <input type="text" name="photo" value="<%= home.photo %>" placeholder="Enter photo url..."><br>
+            <textarea type="text" name="description" placeholder="Enter home description..."><%= home.description %></textarea><br>
+            <input type="submit" id="add-btn" value="Update">
+        </form>
+    </main>
+
+</body>
+
+</html>
