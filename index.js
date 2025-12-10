@@ -46,6 +46,13 @@ app.use((req, res, next) => {
 
 app.use(express.static(path.join(rootDir, "public")));
 
+app.get("/", (req, res, next) => {
+  if (req.session?.isLoggedIn) {
+    return res.redirect("/client");
+  }
+  return res.redirect("/auth/login");
+});
+
 app.use("/auth", authRouter);
 
 app.use("/client", ensureLoggedIn, clientRouter);
