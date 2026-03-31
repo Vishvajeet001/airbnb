@@ -13,12 +13,22 @@
         <%- include('../partials/nav.ejs') %>
     </header>
     <main>
-        <form action="/host/editHome/<%= home.id %>" method="POST">
+        <form action="/host/editHome/<%= home.id %>" method="POST" enctype="multipart/form-data">
             <input type="text" name="name" value="<%= home.name %>" placeholder="Enter home name..."><br>
             <input type="number" name="price" value="<%= home.price %>" placeholder="Enter price per day..."><br>
             <input type="text" name="location" value="<%= home.location %>" placeholder="Enter full location..."><br>
             <input type="number" name="rating" value="<%= home.rating %>" placeholder="Enter rating..."><br>
-            <input type="text" name="photo" value="<%= home.photo %>" placeholder="Enter photo url..."><br>
+            <label for="fileInput" class="custom-file-label">
+                Upload home pictures...
+              </label>
+              <input
+                type="file"
+                id="fileInput"
+                name="photos"
+                class="hidden-file-input"
+                multiple
+                accept="image/*"
+              /><br>
             <textarea type="text" name="description" placeholder="Enter home description..."><%= home.description %></textarea><br>
             <input type="submit" id="add-btn" value="Update">
         </form>

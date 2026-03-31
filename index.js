@@ -3,6 +3,7 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import path from "path";
 import dotenv from "dotenv";
+import multer from "multer";
 
 import rootDir from "./utils/path.js";
 import connectDB from "./utils/db.js";
@@ -21,6 +22,30 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(express.urlencoded());
+app.use(express.static(path.join(rootDir, "public")));
+app.use("/uploads", express.static(path.join(rootDir, "uploads")));
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); 
+  },
+  filename: function (req, file, cb) {
+    const uniquePrefix = Date.now();
+    cb(null,  uniquePrefix + "-" + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files are allowed!"), false);
+  }
+};
+
+const upload = multer({ storage, fileFilter });
+
+app.use(upload.array("photos", 5));
 
 app.use(
   session({
@@ -35,7 +60,7 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  console.log(req.method, req.url, { body: req.body });
+  console.log(req.method, req.url, { body: req.body }, req.files);
   if (req.session) {
     console.log("session.isLoggedIn=", !!req.session.isLoggedIn);
     if (req.session.user)
@@ -43,8 +68,6 @@ app.use((req, res, next) => {
   }
   next();
 });
-
-app.use(express.static(path.join(rootDir, "public")));
 
 app.get("/", (req, res, next) => {
   if (req.session?.isLoggedIn) {

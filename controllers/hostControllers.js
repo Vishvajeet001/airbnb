@@ -49,7 +49,7 @@ const editHomeController = async (req, res, next) => {
 const editHomePostController = async (req, res, next) => {
   try {
     const homeId = req.params.homeId;
-    const { name, price, location, rating, photo, description } = req.body;
+    const { name, price, location, rating, description } = req.body;
     const home = await Home.findById(homeId);
     const ownerId = req.session?.user?._id?.toString();
     if (!home || home.owner?.toString() !== ownerId) {
@@ -60,10 +60,18 @@ const editHomePostController = async (req, res, next) => {
           userType: req.session.user?.userType || "",
         });
     }
-    await Home.updateOne(
-      { _id: homeId },
-      { name, price, location, rating, photo, description }
-    );
+    if (req.files.length === 0) {
+      await Home.updateOne(
+        { _id: homeId },
+        { name, price, location, rating, description }
+      );
+    } else {
+      const photosPaths = req.files.map((file) => file.path);
+      await Home.updateOne(
+        { _id: homeId },
+        { name, price, location, rating, photos: photosPaths, description }
+      );
+    }
     return res.redirect("/host");
   } catch (err) {
     return next(err);
@@ -92,14 +100,15 @@ const removeHomePostController = async (req, res, next) => {
 
 const hostHomePostController = async (req, res, next) => {
   try {
-    const { name, price, location, rating, photo, description } = req.body;
+    const { name, price, location, rating, description } = req.body;
     const ownerId = req.session?.user?._id;
+    const photosPaths = req.files.map((file) => file.path);
     await Home.create({
       name,
       price,
       location,
       rating,
-      photo,
+      photos: photosPaths,
       description,
       owner: ownerId,
     });
